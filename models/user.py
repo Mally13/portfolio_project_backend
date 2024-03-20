@@ -5,7 +5,7 @@ import models
 from models.base_model import BaseModel, Base
 from os import getenv
 import sqlalchemy
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, Date
 from sqlalchemy.orm import relationship
 from hashlib import md5
 
@@ -17,8 +17,12 @@ class User(BaseModel, Base):
     password = Column(String(128), nullable=False)
     first_name = Column(String(128), nullable=True)
     last_name = Column(String(128), nullable=True)
-    places = relationship("Place", backref="user")
-    reviews = relationship("Review", backref="user")
+    preference = relationship('Preference', backref='user', uselist=False)
+    profile_picture = Column(String(200))
+    phone_number = Column(String(15))
+    address = Column(String(200))
+    date_of_birth = Column(Date) 
+
 
     def __init__(self, *args, **kwargs):
         """initializes user"""
