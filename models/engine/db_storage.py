@@ -23,7 +23,7 @@ class DBStorage:
     def __init__(self):
         """Instantiate a DBStorage object"""
         RENDER_DATABASE_URL = getenv('DATABASE_URL')  # Use Render environment variable
-        self.__engine = create_engine(RENDER_DATABASE_URL)
+        self.__engine = create_engine(RENDER_DATABASE_URL.replace('postgres://', 'postgresql://'))
         Base.metadata.create_all(self.__engine)  # Create tables on first run
 
     def all(self, cls=None):
