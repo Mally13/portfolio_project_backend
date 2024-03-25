@@ -16,24 +16,15 @@ classes = {"Preference": Preference, "User": User}
 
 
 class DBStorage:
-    """interaacts with the MySQL database"""
+    """interaacts with the PostgreSQL database"""
     __engine = None
     __session = None
 
     def __init__(self):
         """Instantiate a DBStorage object"""
-        PHABNA_MYSQL_USER = getenv('PHABNA_MYSQL_USER')
-        PHABNA_MYSQL_PWD = getenv('PHABNA_MYSQL_PWD')
-        PHABNA_MYSQL_HOST = getenv('PHABNA_MYSQL_HOST')
-        PHABNA_MYSQL_DB = getenv('PHABNA_MYSQL_DB')
-        PHABNA_ENV = getenv('PHABNA_ENV')
-        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
-                                      format(PHABNA_MYSQL_USER,
-                                             PHABNA_MYSQL_PWD,
-                                             PHABNA_MYSQL_HOST,
-                                             PHABNA_MYSQL_DB))
-        if PHABNA_ENV == "test":
-            Base.metadata.drop_all(self.__engine)
+        RENDER_DATABASE_URL = getenv('RENDER_DATABASE_URL')  # Use Render environment variable
+        self.__engine = create_engine(RENDER_DATABASE_URL)
+        Base.metadata.create_all(self.__engine)  # Create tables on first run
 
     def all(self, cls=None):
         """query on the current database session"""
@@ -61,7 +52,7 @@ class DBStorage:
 
     def reload(self):
         """reloads data from the database"""
-        Base.metadata.create_all(self.__engine)
+        Base.metadata.create_all(self.__engine)  # Recreate tables (optional for testing)
         sess_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(sess_factory)
         self.__session = Session
